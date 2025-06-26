@@ -9,13 +9,13 @@ pipeline {
   stages {
     stage('Clone Repo') {
       steps {
-        git 'https://github.com/yourusername/angular-devops-project.git'
+        git 'https://github.com/Humaidu/tf-ansible-jenkins-angular-proj.git'
       }
     }
 
     stage('Install Dependencies') {
       steps {
-        dir('angular-app') {
+        dir('angular-app/test-app') {
           sh 'npm install'
         }
       }
@@ -23,8 +23,8 @@ pipeline {
 
     stage('Build Angular App') {
       steps {
-        dir('angular-app') {
-          sh 'npm run build --prod'
+        dir('angular-app/test-app') {
+          sh 'npm run build'
         }
       }
     }
