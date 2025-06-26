@@ -81,6 +81,19 @@
         name: jenkins
         state: started
         enabled: true
+    
+    # --------------------
+    # ✅ Install Ansible (for Jenkins to use)
+    # --------------------
+    - name: Add Ansible PPA
+      apt_repository:
+        repo: ppa:ansible/ansible
+        state: present
+
+    - name: Install Ansible
+      apt:
+        name: ansible
+        state: present
 
     # --------------------
     # Deploy Angular App
