@@ -4,6 +4,7 @@ pipeline {
   environment {
     // Optional: configure NodeJS version label if using NodeJS plugin
     PATH = "/usr/bin:$PATH"
+    EC2_IP = "3.253.112.162"
   }
 
   stages {
@@ -26,8 +27,9 @@ pipeline {
     stage('Fix SSH Host Key Trust') {
       steps {
         sh '''
-          mkdir -p ~/.ssh
-          ssh-keyscan -H $EC2_IP >> ~/.ssh/known_hosts
+          mkdir -p /var/lib/jenkins/.ssh
+          ssh-keyscan -H $EC2_IP >> /var/lib/jenkins/.ssh/known_hosts
+
         '''
       }
     }
