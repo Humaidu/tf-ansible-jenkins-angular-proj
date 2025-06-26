@@ -22,7 +22,16 @@ pipeline {
         }
       }
     }
-
+    
+    stage('Fix SSH Host Key Trust') {
+      steps {
+        sh '''
+          mkdir -p ~/.ssh
+          ssh-keyscan -H $EC2_IP >> ~/.ssh/known_hosts
+        '''
+      }
+    }
+    
     stage('Deploy with Ansible') {
       steps {
         sh 'ansible-playbook -i ansible/inventory.ini ansible/playbook.yml'
