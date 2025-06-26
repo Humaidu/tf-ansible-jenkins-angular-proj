@@ -34,9 +34,6 @@ angular-devops-project/
 
 ---
 
-
----
-
 ## ✅ Features
 
 - Provision AWS EC2 with open ports for SSH and HTTP
