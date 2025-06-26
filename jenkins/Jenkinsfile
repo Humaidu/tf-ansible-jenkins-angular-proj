@@ -7,12 +7,6 @@ pipeline {
   }
 
   stages {
-    stage('Clone Repo') {
-      steps {
-        git 'https://github.com/Humaidu/tf-ansible-jenkins-angular-proj.git'
-      }
-    }
-
     stage('Install Dependencies') {
       steps {
         dir('angular-app/test-app') {
