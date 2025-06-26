@@ -1,0 +1,104 @@
+- name: Full DevOps Stack Setup on EC2
+  hosts: web
+  become: true
+
+  vars:
+    node_version: "18.x"
+
+  tasks:
+    - name: Update APT cache
+      apt:
+        update_cache: yes
+
+    - name: Install prerequisite packages
+      apt:
+        name:
+          - curl
+          - gnupg
+          - software-properties-common
+          - apt-transport-https
+          - ca-certificates
+          - openjdk-17-jdk
+          - unzip
+        state: present
+
+    # --------------------
+    # Install Node.js and Angular CLI
+    # --------------------
+    - name: Add NodeSource APT repo
+      shell: curl -fsSL https://deb.nodesource.com/setup_{{ node_version }} | bash -
+      args:
+        executable: /bin/bash
+
+    - name: Install Node.js and npm
+      apt:
+        name: nodejs
+        state: present
+
+    - name: Install Angular CLI
+      npm:
+        name: "@angular/cli"
+        global: yes
+
+    # --------------------
+    # Install Nginx
+    # --------------------
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Ensure Nginx is started and enabled
+      service:
+        name: nginx
+        state: started
+        enabled: true
+
+    # --------------------
+    # Install Jenkins
+    # --------------------
+    - name: Add Jenkins GPG key
+      apt_key:
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
+        state: present
+
+    - name: Add Jenkins APT repository
+      apt_repository:
+        repo: deb https://pkg.jenkins.io/debian-stable binary/
+        state: present
+
+    - name: Update APT again after adding Jenkins repo
+      apt:
+        update_cache: yes
+
+    - name: Install Jenkins
+      apt:
+        name: jenkins
+        state: present
+
+    - name: Ensure Jenkins is started and enabled
+      service:
+        name: jenkins
+        state: started
+        enabled: true
+
+    # --------------------
+    # Deploy Angular App
+    # --------------------
+    - name: Remove default nginx page
+      file:
+        path: /var/www/html/index.nginx-debian.html
+        state: absent
+
+    - name: Copy Angular build to Nginx web root
+      copy:
+        src: ../angular-app/test-app/dist/test-app/
+        dest: /var/www/html/
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted

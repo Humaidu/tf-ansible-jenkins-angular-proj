@@ -1,0 +1,47 @@
+pipeline {
+  agent any
+
+  environment {
+    // Optional: configure NodeJS version label if using NodeJS plugin
+    PATH = "/usr/bin:$PATH"
+  }
+
+  stages {
+    stage('Clone Repo') {
+      steps {
+        git 'https://github.com/yourusername/angular-devops-project.git'
+      }
+    }
+
+    stage('Install Dependencies') {
+      steps {
+        dir('angular-app') {
+          sh 'npm install'
+        }
+      }
+    }
+
+    stage('Build Angular App') {
+      steps {
+        dir('angular-app') {
+          sh 'npm run build --prod'
+        }
+      }
+    }
+
+    stage('Deploy with Ansible') {
+      steps {
+        sh 'ansible-playbook -i ansible/inventory.ini ansible/playbook.yml'
+      }
+    }
+  }
+
+  post {
+    success {
+      echo 'Deployment Successful!'
+    }
+    failure {
+      echo 'Deployment Failed!'
+    }
+  }
+}
